@@ -16,23 +16,53 @@ public class Board {
         this.tiles = new Tile[width][height];
     }
 
-    // Load the map into the tiles object
-    public void loadMap(String fileName) {
+    // Mutators
+    public void setGoldToWin(int goldToWin) {
+        this.goldToWin = goldToWin;
+    }
 
-        // Use try-with-resources when reading files in Java so file is auto closed at end of try block
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+    // Accessors
+    public int getGoldToWin() {
+        return this.goldToWin;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public Tile getTile(int xCoordinate, int yCoordinate) {
+        return tiles[xCoordinate][yCoordinate];
+    }
+
+    // Load the map into the tiles object
+    public void loadMap(String directoryPath, String fileName) {
+
+        File file = new File(directoryPath, fileName);
+
+        // Use try-with-resources when reading files in Java so file is auto closed at
+        // end of try block
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             // Read the first line
             String line = br.readLine();
-            
+
             // Read the second line to get amount of gold required to win
-            line = br.readLine()
+            line = br.readLine();
             if (line != null && line.startsWith("win")) {
-                goldToWin = Integer.parseInt(line.split()" ")[1]);
+                // Following the space is the number of gold required to win, use mutator to set
+                // goldToWin
+                setGoldToWin(Integer.parseInt(line.split(" ")[1]));
             }
-            // Counter to ensure amount of lines doesn't exceed the 'height'
+
+            // Read the rest of the map
+            // y counts the number of rows
             int y = 0;
 
-            // While the line isn't emptyand we haven't exceeded 'height', populate the 'tiles' object
+            // While the line isn't emptyand we haven't exceeded 'height', populate the
+            // 'tiles' object
             while ((line = br.readLine()) != null && y < height) {
                 for (int x = 0; x < line.length() && x < width; x++) {
                     char tileChar = line.charAt(x);
@@ -40,7 +70,7 @@ public class Board {
                 }
                 y++; // Move to next row
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Something went wrong when trying to load the file :/");
@@ -91,16 +121,22 @@ public class Board {
         }
     }
 
-    // Accessor to each tile
-    public Tile getTile(int xCoordinate, int yCoordinate) {
-        return tiles[xCoordinate][yCoordinate];
-    }
-
     // Print out the board - used in LOOK command
-    public void displayBoard() {
+    public void displayBoard(Player player) {
+
+        // Get coordinates of player's current position
+        int playerX = player.getXCoordinate();
+        int playerY = player.getYCoordinate();
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                System.out.println(getCharFromTileType(tiles[x][y].getType()) + " ");
+
+                // If on player's current poisition, display 'P'
+                if (x == playerX && y == playerY) {
+                    System.out.print('P' + " ");
+                } else {
+                    System.out.print(getCharFromTileType(tiles[x][y].getType()) + " ");
+                }
             }
             System.out.println();
         }

@@ -2,6 +2,7 @@ public class HumanPlayer extends Player {
 
     // Fields
     private boolean gameEnded = false;
+    private boolean wasGold = false;
 
     // Accessor
     public boolean isGameEnded() {
@@ -16,6 +17,9 @@ public class HumanPlayer extends Player {
     // Constructor
     public HumanPlayer(int startX, int startY, Board board) {
         super(startX, startY, board);
+
+        // Set player's tile typ to player to display as a 'P' on player's screen
+        board.getTile(startX, startY).setType(TileType.PLAYER);
     }
 
     // Methods
@@ -37,19 +41,21 @@ public class HumanPlayer extends Player {
      * Return result
      */
     @Override
-    public String pickUpGold() {
+    public void pickUpGold() {
         // Use inheritancefrom Player to access voard
         Board board = getBoard();
         Tile currentTile = board.getTile(getXCoordinate(), getYCoordinate());
 
         // If tile is a GOLD tile, increment gold owned, change tile to empty, return
         // result
-        if (currentTile.getType() == TileType.GOLD) {
+
+        if (wasGold) {
             setGold(getGold() + 1);
-            currentTile.setType(TileType.EMPTY);
-            return "Success. Gold owned: " + getGold();
+            currentTile.setType(TileType.EMPTY); // Set the tile to EMPTY after picking up gold
+            wasGold = false; // Reset wasGold after picking up
+            System.out.println("Success. Gold owned: " + getGold());
         } else {
-            return "Fail. Gold owned: " + getGold();
+            System.out.println("Fail. Gold owned: " + getGold());
         }
     }
 
@@ -76,13 +82,29 @@ public class HumanPlayer extends Player {
                 break;
         }
 
-        // Checks if the tile player wants to move into is in bounds and not a wall and
-        // moves them if so. ELse, displays error message.
         if (isValidCoordinate(newX, newY)) {
             Tile targetTile = getBoard().getTile(newX, newY);
             if (targetTile.getType() != TileType.WALL) {
+                Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
+
+                // If the player is moving off a gold tile and hasn't picked it up, revert it
+                // back to gold
+                if (getPreviousTileType() == TileType.GOLD && !wasGold) {
+                    currentTile.setType(TileType.GOLD);
+                } else {
+                    currentTile.setType(getPreviousTileType());
+                }
+
+                // Update player's position
                 setXCoordinate(newX);
                 setYCoordinate(newY);
+
+                // Store the original type of the target tile
+                setPreviousTileType(targetTile.getType());
+
+                // Set the new position to PLAYER
+                targetTile.setType(TileType.PLAYER);
+
                 System.out.println("Success");
             } else {
                 System.out.println("Fail. There's a wall in the way!");
@@ -94,7 +116,7 @@ public class HumanPlayer extends Player {
 
     // Displays the board
     public void look(Board board) {
-        board.displayBoard();
+        board.displayBoard(this);
     }
 
     // Quits the game. If player wins, response is WIN, else it is LOSE
@@ -115,6 +137,7 @@ public class HumanPlayer extends Player {
     }
 
     // Checks if the coordinates are within range of the height and width and >= 0
+    // It is private beacuse its an internal helper method
     private boolean isValidCoordinate(int x, int y) {
         Board board = getBoard();
         return x >= 0 && x < board.getWidth() && y >= 0 && y < board.getHeight();
@@ -158,27 +181,27 @@ public class HumanPlayer extends Player {
         }
 
         // Handle the HELLO command
-        else if (input.toUpperCase() == "HELLO") {
+        else if (input.equalsIgnoreCase("HELLO")) {
             hello(board);
         }
 
         // Handle the GOLD command
-        else if (input.toUpperCase() == "GOLD") {
+        else if (input.equalsIgnoreCase("GOLD")) {
             gold();
         }
 
-        // HAndle the PICKUP command
-        else if (input.toUpperCase() == "PICKUP") {
+        // Handle the PICKUP command
+        else if (input.equalsIgnoreCase("PICKUP")) {
             pickUpGold();
         }
 
-        // Handle the look command
-        else if (input.toUpperCase() == "LOOK") {
+        // Handle the LOOK command
+        else if (input.equalsIgnoreCase("LOOK")) {
             look(board);
         }
 
         // Handle the QUIT command
-        else if (input.toUpperCase() == "QUIT") {
+        else if (input.equalsIgnoreCase("QUIT")) {
             quit();
         }
 
@@ -186,5 +209,4 @@ public class HumanPlayer extends Player {
             System.out.println("Invalid command!");
         }
     }
-
 }

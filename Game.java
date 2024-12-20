@@ -12,34 +12,32 @@ public class Game {
 
         // Load in the map to the 'board' object
         board.loadMap(directoryPath, fileName);
-        
+
         // Initialise a human player
         // TODO: Implement random placement of player
         HumanPlayer player = new HumanPlayer(2, 2, board);
 
         // Display the initial board
-        board.displayBoard();;
+        board.displayBoard(player);
 
         // Create a Scanner object for user input
         Scanner scanner = new Scanner(System.in);
         String input;
 
-        // Boolean variable toexitor stay in loop
-        boolean isGameOver = false;
-
         // Welcom message
-        System.out.println("Welcome to Dungeons of Doom! Enter your commandsto collect the gold and evade the bot!");
+        System.out.println("Welcome to Dungeons of Doom! Enter your commands to collect the gold and evade the bot!");
 
         // Infinite loop which gets user input until they type 'QUIT'
-        while(!Player.isGameEnded()) {
+        while (!player.isGameEnded()) {
             System.out.println(">");
-            input = scanner.nextLine().trim() // Use trim to remove any leading or trailing whitespace
-            
-            // Call the method to handle the user input and store in variable to check if game is over
-            player.handleUserInput(input);
+            input = scanner.nextLine().trim(); // Use trim to remove any leading or trailing whitespace
 
-            // Check if player has won or decided to quit
-            if
+            // Call the method to handle the user input and store in variable to check if
+            // game is over
+            player.handleUserInput(input);
         }
+        // Close the scanner
+        scanner.close();
+        System.err.println("Game Over!");
     }
 }
