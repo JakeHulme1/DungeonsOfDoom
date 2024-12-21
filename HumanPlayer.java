@@ -74,17 +74,25 @@ public class HumanPlayer extends Player {
         if (getOriginalTileType() == TileType.GOLD) {
             setGold(getGold() + 1);
             currentTile.setType(TileType.EMPTY); // Set the tile to EMPTY after picking up gold
-            setOriginalTileType(TileType.EMPTY); // Update originalTileType to EMPTY
+            setOriginalTileType(TileType.EMPTY); // Update originalTileType to EMPTY (in case player moves over it
+                                                 // again)
             System.out.println("Success. Gold owned: " + getGold());
         } else {
             System.out.println("Fail. Gold owned: " + getGold());
         }
     }
 
-    // Moves the player in the specified direction unless they go into a wall
+    /**
+     * Moves the player in the specified direction unless they go into a wall or out
+     * of bounds
+     *
+     * @param direction the direction in which to move the player
+     */
     @Override
     public void move(Direction direction) {
 
+        // Current coordinates of player, to be changed in the switch statements,
+        // depending on the direction
         int newX = getXCoordinate();
         int newY = getYCoordinate();
 
@@ -104,12 +112,17 @@ public class HumanPlayer extends Player {
                 break;
         }
 
+        // Check the new position is not out of bounds
         if (isValidCoordinate(newX, newY)) {
+
+            // Store info about the newtile using new coordinates
             Tile targetTile = getBoard().getTile(newX, newY);
+
+            // Check the new tile is not a wall
             if (targetTile.getType() != TileType.WALL) {
-                Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
 
                 // Restore the original tile type of the current position
+                Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
                 currentTile.setType(getOriginalTileType());
 
                 // Update player's position
@@ -131,40 +144,65 @@ public class HumanPlayer extends Player {
         }
     }
 
-    // Displays the board
+    /**
+     * Displays the board.
+     *
+     * @param board the game board
+     */
     public void look(Board board) {
         board.displayBoard(this);
     }
 
-    // Quits the game. If player wins, response is WIN, else it is LOSE
+    /**
+     * Quits the game. If the player wins, the response is a win message, otherwise
+     * its a lose message
+     */
     @Override
     public void quit() {
 
+        // If the player is on an exit tile and has enough gold to win, display win
+        // message
         Board board = getBoard();
         if (getOriginalTileType() == TileType.EXIT && getGold() >= board.getGoldToWin()) {
             System.out.println("Congratulations! You have won the game!");
             setGameEnded(true);
-        } else {
-            System.out.println("You lost, our commiserations. Better luck nex time!");
+        }
+        // If not, display lose message
+        else {
+            System.out.println("You lost. Better luck next time!");
             setGameEnded(true);
         }
     }
 
-    // Checks if the coordinates are within range of the height and width and >= 0
-    // It is private beacuse its an internal helper method
+    /**
+     * Checks if the passed coordinates are within range of the height and width and
+     * >= 0.
+     * It is private because it's an internal helper method.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return true if the coordinates are valid, false otherwise
+     */
     private boolean isValidCoordinate(int x, int y) {
         Board board = getBoard();
         return x >= 0 && x < board.getWidth() && y >= 0 && y < board.getHeight();
     }
 
-    // Calls relevant functions based on user input
+    /**
+     * Calls relevant functions based on user input in the command-line
+     *
+     * @param input the user input
+     */
     public void handleUserInput(String input) {
 
         Board board = getBoard();
 
-        // Handle the MOVE commands
-
-        // Splits apart the inputted string into an array of substrings
+        /*
+         * Handle the MOVE commands
+         * 
+         * // Splits apart the inputted string (where there is empty space " ") into an
+         * array of substrings
+         */
         String[] sections = input.split(" ");
 
         // If the input is 2 substrings with the first being MOVE, we can process the
