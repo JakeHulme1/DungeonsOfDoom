@@ -9,7 +9,7 @@ public class Game {
     /**
      * This is the main method which can be run to play the game in the terminal
      * 
-     * @param args
+     * @param args default argument for main method
      */
     public static void main(String[] args) {
 
@@ -19,12 +19,11 @@ public class Game {
          */
         Board board = new Board(20, 9);
 
-        // Input file path (directoryPath) and map name (fileName)
-        String directoryPath = "./maps";
+        // Input map name (fileName)
         String fileName = "map2.txt";
 
         // Load in the map to the 'board' object
-        board.loadMap(directoryPath, fileName);
+        board.loadMap(fileName);
 
         // Initialise a human player and a bot player, both at random positions
         HumanPlayer player = new HumanPlayer(board);

@@ -17,7 +17,6 @@ public class HumanPlayer extends Player {
      * board.
      *
      * @param board the board the player is playing on
-     * @param this  the player who is assigned the random starting position
      */
     public HumanPlayer(Board board) {
         super(board);
@@ -34,7 +33,8 @@ public class HumanPlayer extends Player {
     /**
      * Sets the status of if the game is over or not
      * 
-     * @param status
+     * @param status boolean value which represents whether the game has ended or
+     *               not
      */
     public void setGameEnded(boolean status) {
         this.gameEnded = status;
@@ -86,7 +86,7 @@ public class HumanPlayer extends Player {
     /**
      * Moves the player in the specified direction unless they go into a wall or out
      * of bounds
-     * Called via 'move <direction>' command
+     * Called via 'move [N,E,S or W]' command
      *
      * @param direction the direction in which to move the player
      */

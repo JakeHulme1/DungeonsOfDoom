@@ -33,8 +33,8 @@ public class Board {
     /**
      * Constructs a new board with the specified width and height
      * 
-     * @param width
-     * @param height
+     * @param width  the width of the board
+     * @param height the height of the board
      */
     public Board(int width, int height) {
         this.width = width;
@@ -93,8 +93,8 @@ public class Board {
      * Reads the map from a given directory path and filename and stores it in the
      * tiles 2D array
      * 
-     * @param directoryPath
-     * @param fileName
+     * @param directoryPath the path to the folder containing the maps
+     * @param fileName      the name of the .txt file which is the map to be loaded
      */
     public void loadMap(String directoryPath, String fileName) {
 
