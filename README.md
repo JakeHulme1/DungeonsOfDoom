@@ -18,4 +18,4 @@ Object-oriented design principles used:
 - Single responsibility - each class has minimum amount of functionality
 - Inheritance - HumanPlayer and BotPlayer inherit from abstract Player class - promotes code reusability
 - Encapsulation - all functionality is hidden within classes, with only necessary methods being public
-- Clean and readable code - all field and method names have relevant titles, comments used to explain why code is there, the code explains what it is itself.
+- Clean and readable code - all field and method names have relevant titles, comments used to explain why code is there and when its not obvious what code does.
