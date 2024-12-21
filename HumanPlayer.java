@@ -1,3 +1,5 @@
+import java.util.Random; // To generate random numbers for starting position
+
 /**
  * This class contains all the functionality of a Human Player which the user
  * controls through the
@@ -14,15 +16,12 @@ public class HumanPlayer extends Player {
      * Constructs a new HumanPlayer with the specified starting coordinates and
      * board.
      *
-     * @param startX the starting x-coordinate
-     * @param startY the starting y-coordinate
-     * @param board  the board the player is playing on
+     * @param board the board the player is playing on
+     * @param this  the player who is assigned the random starting position
      */
-    public HumanPlayer(int startX, int startY, Board board) {
-        super(startX, startY, board);
-
-        // Set player's tile type to player to display as a 'P' on player's screen
-        board.getTile(startX, startY).setType(TileType.PLAYER);
+    public HumanPlayer(Board board) {
+        super(board);
+        randomStartingPosition(board, this);
     }
 
     /**
@@ -53,6 +52,7 @@ public class HumanPlayer extends Player {
 
     /**
      * Tells the user how much gold they currently own
+     * Called via 'gold' command
      */
     public void gold() {
         System.out.println("Gold owned: " + getGold());
@@ -62,6 +62,7 @@ public class HumanPlayer extends Player {
      * Picks up gold on the player's location if there is gold on that tile.
      * Increments the gold owned, changes the tile to an empty tile, and returns the
      * result.
+     * Called via 'pickup' command
      */
     @Override
     public void pickUpGold() {
@@ -85,6 +86,7 @@ public class HumanPlayer extends Player {
     /**
      * Moves the player in the specified direction unless they go into a wall or out
      * of bounds
+     * Called via 'move <direction>' command
      *
      * @param direction the direction in which to move the player
      */
@@ -129,7 +131,8 @@ public class HumanPlayer extends Player {
                 setXCoordinate(newX);
                 setYCoordinate(newY);
 
-                // Store the original type of the target tile
+                // Store the original type of the target tile (to keep track if it was
+                // a gold or exit tile)
                 setOriginalTileType(targetTile.getType());
 
                 // Set the new position to PLAYER
@@ -161,7 +164,7 @@ public class HumanPlayer extends Player {
     public void quit() {
 
         // If the player is on an exit tile and has enough gold to win, display win
-        // message
+        // message and set 'gameEnded' field to true
         Board board = getBoard();
         if (getOriginalTileType() == TileType.EXIT && getGold() >= board.getGoldToWin()) {
             System.out.println("Congratulations! You have won the game!");
@@ -181,7 +184,7 @@ public class HumanPlayer extends Player {
      *
      * @param x the x-coordinate
      * @param y the y-coordinate
-     * @return true if the coordinates are valid, false otherwise
+     * @return true if the above coordinates are valid, false otherwise
      */
     private boolean isValidCoordinate(int x, int y) {
         Board board = getBoard();
@@ -260,5 +263,35 @@ public class HumanPlayer extends Player {
         else {
             System.out.println("Invalid command!");
         }
+    }
+
+    /**
+     * Randomly places a player on an empty tile on the board.
+     *
+     * @param board  the game board
+     * @param player the player to be placed
+     */
+    public void randomStartingPosition(Board board, Player player) {
+
+        Random random = new Random();
+        boolean validCoordinates = false;
+
+        // Constantly generate random coordinates until its an empty space
+        do {
+            int randomX = random.nextInt((board.getWidth()));
+            int randomY = random.nextInt(board.getHeight());
+
+            // Check if the random coordinates are on an empty tile
+            Tile tile = board.getTile(randomX, randomY);
+            if (tile.getType() == TileType.EMPTY) {
+                // Place player on the empty tile
+                player.setXCoordinate(randomX);
+                player.setYCoordinate(randomY);
+                board.getTile(randomX, randomY).setType(TileType.PLAYER);
+
+                // Exit loop
+                validCoordinates = true;
+            }
+        } while (!validCoordinates);
     }
 }

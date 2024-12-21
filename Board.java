@@ -1,44 +1,101 @@
 import java.io.*;
 
+/**
+ * This class represents the game board.
+ * It manages the individual tiles, dimensions of the board, loading in the
+ * board,
+ * displaying the board, and the amount of gold required to win.
+ */
 public class Board {
 
-    // Fields
+    /**
+     * The 2D array of tiles representing the board
+     */
     private Tile[][] tiles;
+
+    /**
+     * The width of the board - user needs to input dimensions for printing board
+     * and checking moves are within bounds (maps aren't always surrounded by walls)
+     */
     private int width;
+
+    /**
+     * The height of the board - user needs to input dimensions for printing board
+     * and checking moves are within bounds (maps aren't always surrounded by walls)
+     */
     private int height;
+
+    /**
+     * The amount of gold required to win the game
+     */
     private int goldToWin;
 
-    // Constructor
-    public Board(int width, int height) {// User will need to knowboard dimensions beforereading it in - need some
-                                         // defensive programming here
+    /**
+     * Constructs a new board with the specified width and height
+     * 
+     * @param width
+     * @param height
+     */
+    public Board(int width, int height) {
         this.width = width;
         this.height = height;
         this.tiles = new Tile[width][height];
     }
 
-    // Mutators
+    /**
+     * Sets the amount of gold required to win the game.
+     *
+     * @param goldToWin the amount of gold required to win
+     */
     public void setGoldToWin(int goldToWin) {
         this.goldToWin = goldToWin;
     }
 
-    // Accessors
+    /**
+     * Gets the amount of gold required to win the game.
+     *
+     * @return the amount of gold required to win
+     */
     public int getGoldToWin() {
         return this.goldToWin;
     }
 
+    /**
+     * Gets the width of the board.
+     *
+     * @return the width of the board
+     */
     public int getWidth() {
         return this.width;
     }
 
+    /**
+     * Gets the height of the board.
+     *
+     * @return the height of the board
+     */
     public int getHeight() {
         return this.height;
     }
 
+    /**
+     * Returns the tile at the specified coordinates.
+     *
+     * @param xCoordinate the x-coordinate of the tile
+     * @param yCoordinate the y-coordinate of the tile
+     * @return the tile at the specified coordinates
+     */
     public Tile getTile(int xCoordinate, int yCoordinate) {
         return tiles[xCoordinate][yCoordinate];
     }
 
-    // Load the map into the tiles object
+    /**
+     * Reads the map from a given directory path and filename and stores it in the
+     * tiles 2D array
+     * 
+     * @param directoryPath
+     * @param fileName
+     */
     public void loadMap(String directoryPath, String fileName) {
 
         File file = new File(directoryPath, fileName);
@@ -46,7 +103,9 @@ public class Board {
         // Use try-with-resources when reading files in Java so file is auto closed at
         // end of try block
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            // Read the first line
+
+            // Read the first line (don't need to do anything with it, its just the map
+            // title)
             String line = br.readLine();
 
             // Read the second line to get amount of gold required to win
@@ -61,8 +120,8 @@ public class Board {
             // y counts the number of rows
             int y = 0;
 
-            // While the line isn't emptyand we haven't exceeded 'height', populate the
-            // 'tiles' object
+            // While the line isn't empty and we haven't exceeded 'height', populate the
+            // tiles array
             while ((line = br.readLine()) != null && y < height) {
                 for (int x = 0; x < line.length() && x < width; x++) {
                     char tileChar = line.charAt(x);
@@ -77,12 +136,22 @@ public class Board {
         }
     }
 
-    // Creates a tile from the inputted character, linking it to TileType object.
-    // Private because it is an internal'helper function' for the public loadMap
-    // function - encapsulates functionality
+    /**
+     * Assigns each tile in tiles array a TileType depending on its character (see
+     * TileType class tosee different types).
+     * Used by loadMap() method to assign each character a type (each type has
+     * different functionality)
+     * Type is private as this is an internal helper function,no other classes need
+     * access to this
+     * 
+     * @param tileChar The inputted character which is assigned a tile type
+     * @return the tile type for each character
+     */
     private Tile createTileFromChar(char tileChar) {
 
-        // Used switch statements as this is much more concise than if statements
+        // Used switch statements as this is much more concise than if statements and
+        // there is a
+        // finite number of tile types
         switch (tileChar) {
             case '#':
                 return new Tile(TileType.WALL);
@@ -101,7 +170,13 @@ public class Board {
         }
     }
 
-    // Choose the corresponding character for a tile when passed its TileType
+    /**
+     * Returns the corresponding character for a tile when passed its TileType.
+     *
+     * @param type the tile type
+     * @return the character representing the tile type (used for displaying the
+     *         map)
+     */
     private char getCharFromTileType(TileType type) {
         switch (type) {
             case WALL:
@@ -121,7 +196,11 @@ public class Board {
         }
     }
 
-    // Print out the board - used in LOOK command
+    /**
+     * Prints the board to the terminal, used by the LOOK command
+     * 
+     * @param player need to pass the player so that their position can be printed
+     */
     public void displayBoard(Player player) {
 
         // Get coordinates of player's current position
@@ -131,10 +210,14 @@ public class Board {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
-                // If on player's current poisition, display 'P'
+                // If on player's current poisition, display 'P'. The player's position should
+                // always overwrite the
+                // the tile it is on
                 if (x == playerX && y == playerY) {
                     System.out.print('P' + " ");
-                } else {
+                }
+                // Else, display the character represented by the tile type
+                else {
                     System.out.print(getCharFromTileType(tiles[x][y].getType()) + " ");
                 }
             }

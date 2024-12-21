@@ -1,19 +1,40 @@
+/**
+ * The Tile class represents asingle tileon the board.
+ * 
+ * Each tile has a type which is defined by the TileType enum. The reason for
+ * separating the Tile class and TileType enum isto follow OOP best practises:
+ * Encapsulation and single repsonsibilty (more info in README file)
+ */
 public class Tile {
-    
-    // Fields - each tile has a tile type contained in the enum class 'TileType'
+
+    /**
+     * The type of the tile, defined by the TileType enum.
+     */
     private TileType type;
 
-    // Constructor
+    /**
+     * Constructs a new Tile with the specified type.
+     *
+     * @param type the type of the tile
+     */
     public Tile(TileType type) {
         this.type = type;
     }
 
-    // Accessor
+    /**
+     * Gets the type of the tile.
+     *
+     * @return the type of the tile
+     */
     public TileType getType() {
         return type;
     }
 
-    // Mutator
+    /**
+     * Sets the type of the tile.
+     *
+     * @param type the new type of the tile
+     */
     public void setType(TileType type) {
         this.type = type;
     }

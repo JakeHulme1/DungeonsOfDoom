@@ -15,23 +15,23 @@ public class Game {
 
         /*
          * Initialise a board- all boards are 20 x 9 in the 'Maps' folder. If new maps
-         * are added,
-         * when loading them in, the correct dimensions must be input here
+         * are added, when loading them in, the correct dimensions must be input here
          */
         Board board = new Board(20, 9);
 
         // Input file path (directoryPath) and map name (fileName)
         String directoryPath = "./maps";
-        String fileName = "map1.txt";
+        String fileName = "map2.txt";
 
         // Load in the map to the 'board' object
         board.loadMap(directoryPath, fileName);
 
-        // Initialise a human player
-        // TODO: Implement random placement of player
-        HumanPlayer player = new HumanPlayer(2, 2, board);
+        // Initialise a human player and a bot player, both at random positions
+        HumanPlayer player = new HumanPlayer(board);
+        BotPlayer bot = new BotPlayer(board);
 
-        // Display the initial board so player can make decisions
+        // Display the initial board so player can see the starting position of bot and
+        // themselves
         board.displayBoard(player);
 
         // Create a Scanner object for user input
@@ -43,12 +43,23 @@ public class Game {
 
         // Infinite loop which gets user input until they type 'quit'
         while (!player.isGameEnded()) {
-            System.out.println(">");
+            System.out.print(">");
             input = scanner.nextLine().trim(); // Use trim to remove any leading or trailing whitespace
 
-            // Call the method to handle the user input and store in variable to check if
-            // game is over
+            // Take user input and execute their move
             player.handleUserInput(input);
+
+            // Determine the bot's next move and move the bot
+            Direction botDirection = bot.determineNextMove(player);
+            if (botDirection != null) {
+                bot.move(botDirection);
+            }
+
+            // If bot and player are on the same position, game over
+            if (bot.getXCoordinate() == player.getXCoordinate() && bot.getYCoordinate() == player.getYCoordinate()) {
+                System.out.println("The bot caught you!");
+                player.setGameEnded(true);
+            }
         }
         // Close the scanner
         scanner.close();

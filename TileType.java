@@ -1,7 +1,39 @@
-/* Used this guide on Java enum as we know all possible variations of a tile at compile time:
-https://www.geeksforgeeks.org/enum-in-java/?ref=header_outind */
+/* Used this guide on Java enum:
+https://www.geeksforgeeks.org/enum-in-java/?ref=header_outind 
+Since we know all tile types at compile-time, an enum is appropriate here */
 
+/**
+ * The TileType contains all the types a tile can have
+ */
 public enum TileType {
-    // All public so they can be accessed by other functions
-    WALL,EMPTY, GOLD, EXIT, PLAYER, BOT
+
+    /**
+     * Represents a wall tile.
+     */
+    WALL,
+
+    /**
+     * Represents an empty tile.
+     */
+    EMPTY,
+
+    /**
+     * Represents a gold tile.
+     */
+    GOLD,
+
+    /**
+     * Represents an exit tile.
+     */
+    EXIT,
+
+    /**
+     * Represents a player tile.
+     */
+    PLAYER,
+
+    /**
+     * Represents a bot tile.
+     */
+    BOT
 }
