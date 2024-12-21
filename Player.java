@@ -6,6 +6,7 @@ public abstract class Player {
     private int gold = 0;
     private Board board;
     private TileType previousTileType = TileType.EMPTY;
+    private TileType originalTileType = TileType.EMPTY;
 
     // Constructor
     // TOD: Implement random placement of HumanPlayer or BotPlayer, ensuring they
@@ -38,6 +39,10 @@ public abstract class Player {
         return this.previousTileType;
     }
 
+    public TileType getOriginalTileType() {
+        return this.originalTileType;
+    }
+
     // Mutators
     public void setXCoordinate(int xCoordinate) {
         this.xCoordinate = xCoordinate;
@@ -59,12 +64,16 @@ public abstract class Player {
         this.previousTileType = previousTileType;
     }
 
+    public void setOriginalTileType(TileType previousTileType) {
+        this.originalTileType = previousTileType;
+    }
+
     // Methods:
     public abstract void pickUpGold();
 
     public abstract void move(Direction direction); // Implementation in HumanPlayer and BotPlayer,inherited from here
 
-    public abstract String quit();
+    public abstract void quit();
 
     public abstract boolean isGameEnded();
 }

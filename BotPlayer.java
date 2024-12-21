@@ -11,8 +11,8 @@ public class BotPlayer extends Player {
     public void move(Direction direction) {
     }
 
-    public String pickUpGold() {
-        return "Test";
+    public void pickUpGold() {
+        return;
     }
 
     public String quit() {

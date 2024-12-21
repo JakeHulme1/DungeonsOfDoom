@@ -1,58 +1,80 @@
+/**
+ * This class contains all the functionality of a Human Player which the user
+ * controls through the
+ * command-line
+ */
 public class HumanPlayer extends Player {
 
-    // Fields
+    /**
+     * Boolean value which stores if the game has ended or not
+     */
     private boolean gameEnded = false;
-    private boolean wasGold = false;
 
-    // Accessor
+    /**
+     * Constructs a new HumanPlayer with the specified starting coordinates and
+     * board.
+     *
+     * @param startX the starting x-coordinate
+     * @param startY the starting y-coordinate
+     * @param board  the board the player is playing on
+     */
+    public HumanPlayer(int startX, int startY, Board board) {
+        super(startX, startY, board);
+
+        // Set player's tile type to player to display as a 'P' on player's screen
+        board.getTile(startX, startY).setType(TileType.PLAYER);
+    }
+
+    /**
+     * Returns the boolean value of whether the game has ended or not
+     */
     public boolean isGameEnded() {
         return this.gameEnded;
     }
 
-    // Mutator
+    /**
+     * Sets the status of if the game is over or not
+     * 
+     * @param status
+     */
     public void setGameEnded(boolean status) {
         this.gameEnded = status;
     }
 
-    // Constructor
-    public HumanPlayer(int startX, int startY, Board board) {
-        super(startX, startY, board);
-
-        // Set player's tile typ to player to display as a 'P' on player's screen
-        board.getTile(startX, startY).setType(TileType.PLAYER);
-    }
-
-    // Methods
-
-    // Tells user how much gold they need to collect to win
+    /**
+     * Tells the user how much gold they need to collect to win on a certain baord.
+     * Called via 'hello' command
+     *
+     * @param board the game board
+     */
     public void hello(Board board) {
         System.out.println("Gold to win: " + board.getGoldToWin());
     }
 
-    // Tells user how much gold they currently own
+    /**
+     * Tells the user how much gold they currently own
+     */
     public void gold() {
         System.out.println("Gold owned: " + getGold());
     }
 
-    /*
-     * Pick up gold on players location if there is gold on that tile.
-     * Increment gold owned
-     * Change tile to empty tile
-     * Return result
+    /**
+     * Picks up gold on the player's location if there is gold on that tile.
+     * Increments the gold owned, changes the tile to an empty tile, and returns the
+     * result.
      */
     @Override
     public void pickUpGold() {
-        // Use inheritancefrom Player to access voard
-        Board board = getBoard();
-        Tile currentTile = board.getTile(getXCoordinate(), getYCoordinate());
 
-        // If tile is a GOLD tile, increment gold owned, change tile to empty, return
-        // result
+        // Access the tile the player is currently on
+        Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
 
-        if (wasGold) {
+        // If the tile was GOLD before the player moved onto it, increment gold and set
+        // it to empty
+        if (getOriginalTileType() == TileType.GOLD) {
             setGold(getGold() + 1);
             currentTile.setType(TileType.EMPTY); // Set the tile to EMPTY after picking up gold
-            wasGold = false; // Reset wasGold after picking up
+            setOriginalTileType(TileType.EMPTY); // Update originalTileType to EMPTY
             System.out.println("Success. Gold owned: " + getGold());
         } else {
             System.out.println("Fail. Gold owned: " + getGold());
@@ -87,20 +109,15 @@ public class HumanPlayer extends Player {
             if (targetTile.getType() != TileType.WALL) {
                 Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
 
-                // If the player is moving off a gold tile and hasn't picked it up, revert it
-                // back to gold
-                if (getPreviousTileType() == TileType.GOLD && !wasGold) {
-                    currentTile.setType(TileType.GOLD);
-                } else {
-                    currentTile.setType(getPreviousTileType());
-                }
+                // Restore the original tile type of the current position
+                currentTile.setType(getOriginalTileType());
 
                 // Update player's position
                 setXCoordinate(newX);
                 setYCoordinate(newY);
 
                 // Store the original type of the target tile
-                setPreviousTileType(targetTile.getType());
+                setOriginalTileType(targetTile.getType());
 
                 // Set the new position to PLAYER
                 targetTile.setType(TileType.PLAYER);
@@ -121,18 +138,15 @@ public class HumanPlayer extends Player {
 
     // Quits the game. If player wins, response is WIN, else it is LOSE
     @Override
-    public String quit() {
+    public void quit() {
 
-        Tile currentTile = getBoard().getTile(getXCoordinate(), getYCoordinate());
         Board board = getBoard();
-        if (currentTile.getType() == TileType.EXIT && getGold() == board.getGoldToWin()) {
+        if (getOriginalTileType() == TileType.EXIT && getGold() >= board.getGoldToWin()) {
             System.out.println("Congratulations! You have won the game!");
             setGameEnded(true);
-            return "WIN";
         } else {
-            System.out.println("Our commiserations. Better luck nex time!");
+            System.out.println("You lost, our commiserations. Better luck nex time!");
             setGameEnded(true);
-            return "LOSE";
         }
     }
 
